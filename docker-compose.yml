@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/progres_soft
+      SPRING_DATASOURCE_USERNAME: pguser
+      SPRING_DATASOURCE_PASSWORD: password
+      SERVER_PORT: 8081
+    depends_on:
+      - db
+    volumes:
+      - maven-repo:/root/.m2
+
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: pguser
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: progres_soft
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql
+      - ./init-multiple-databases.sh:/docker-entrypoint-initdb.d/init-multiple-databases.sh
+    command: ["postgres", "-p", "5432"]
+
+volumes:
+  db_data:
+  maven-repo:
