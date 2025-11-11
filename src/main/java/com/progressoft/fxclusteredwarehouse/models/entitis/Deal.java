@@ -8,7 +8,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
@@ -18,7 +17,6 @@ import java.util.Currency;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-//@RequiredArgsConstructor
 @Accessors(chain = true)
 @Entity
 @Table(name = "deals")

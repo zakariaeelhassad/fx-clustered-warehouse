@@ -1,7 +1,9 @@
 package com.progressoft.fxclusteredwarehouse.controller;
 
+import com.progressoft.fxclusteredwarehouse.exception.DealIdException;
 import com.progressoft.fxclusteredwarehouse.exception.ErrorResponse;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -34,6 +36,37 @@ public class GlobalExceptionHandler {
                 VALIDATION_MESSAGE,
                 request.getDescription(false),
                 errors
+        );
+    }
+
+    @ExceptionHandler(DealIdException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleDealIdException(final DealIdException exception, WebRequest request) {
+        return new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                LocalDateTime.now(),
+                exception.getClass().getSimpleName(),
+                request.getDescription(false),
+                exception.getMessage()
+        );
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleHttpMessageNotReadableException(final HttpMessageNotReadableException exception, WebRequest request) {
+        String customMessage = "Invalid request format or data type. Check Currency or Date fields.";
+
+        String detail = exception.getMessage();
+        if (detail != null && detail.contains("Unrecognized currency")) {
+            customMessage = "Unrecognized currency code. Please enter a valid ISO 4217 currency code (e.g., 'USD', 'EUR').";
+        }
+
+        return new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                LocalDateTime.now(),
+                exception.getClass().getSimpleName(),
+                request.getDescription(false),
+                customMessage
         );
     }
 
