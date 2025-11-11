@@ -21,6 +21,8 @@ public class DealService implements IDealService {
 
     @Override
     public DealResponseDto created(DealRequestDto dto){
+        checkCurrencyEquality(dto);
+
         log.info("Attempting to save deal with ID: {}", dto.id());
 
         if(repository.existsById(dto.id())) {
@@ -32,6 +34,14 @@ public class DealService implements IDealService {
         log.info("Deal saved successfully with ID: {}", savedDeal.getId());
 
         return mapper.toResponseEntity(savedDeal);
+    }
+
+    private void checkCurrencyEquality(DealRequestDto dto) {
+        if (dto.fromCurrency().equals(dto.toCurrency())) {
+            log.warn("Currency equality detected: {} to {}. Operation aborted.",
+                    dto.fromCurrency(), dto.toCurrency());
+            throw new DealIdException("Cannot convert currency to itself. fromCurrency and toCurrency must be different.");
+        }
     }
 
 }
